@@ -1,0 +1,16 @@
+ # Dockerfile.
+# FROM ubuntu:20.04 # FROM python:latest 
+# ... most recent "image" created since DockerServer build = f48ea80eae5a  <-- needed in FROM
+
+# after running command:  docker build -f DockerServer.yml .
+# ... it output this upon completion ...
+# ---> Running in 533f2cbd3135
+# Removing intermediate container 533f2cbd3135 ---> 85345aa61801 Successfully built 85345aa61801
+
+# FROM requires this syntax:
+# FROM [--platform=<platorm>] <image> [AS <name>]
+FROM python3:latest
+
+ADD Server.py /server/
+
+WORKDIR /server/

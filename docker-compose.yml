@@ -1,0 +1,81 @@
+version: "3"
+services:    
+    server:
+        image: handsonsecurity/seed-ubuntu:large
+        container_name: host-192.168.60.5
+        tty: true
+        cap_add:
+                - ALL
+        # volumes:
+        #        - ./volumes:/server
+        networks:
+            net-192.168.60.0:
+                ipv4_address: 192.168.60.5
+        build: server/        
+        command: bash -c python3 Server.py
+        ports:
+          - "8080:8080"                 
+    client:
+        image: handsonsecurity/seed-ubuntu:large
+        container_name: host-192.168.60.6
+        tty: true
+        cap_add:
+                - ALL
+        # volumes:
+        #         - ./volumes:/client
+        networks:
+            net-192.168.60.0:
+                ipv4_address: 192.168.60.6
+        build: client/        
+        command: bash -c python3 Client.py 8080
+        # network_mode: host
+        depends_on:
+          - server
+    client2:
+        image: handsonsecurity/seed-ubuntu:large
+        container_name: host-192.168.60.7
+        tty: true
+        cap_add:
+                - ALL
+        # volumes:
+        #        - ./volumes:/client
+        networks:
+            net-192.168.60.0:
+                ipv4_address: 192.168.60.7
+        build: client/        
+        command: bash -c "python3 ./client/Client.py 8080"
+        # network_mode: host
+        depends_on:
+          - server       
+    Router:
+        image: handsonsecurity/seed-ubuntu:large
+        container_name: Router
+        tty: true
+        cap_add:
+                - ALL
+        sysctls:
+                - net.ipv4.ip_forward=1
+        volumes:
+                - ./volumes:/volumes
+        networks:
+            net-10.9.0.0:
+                ipv4_address: 10.9.0.11
+            net-192.168.60.0:
+                ipv4_address: 192.168.60.11
+        command: bash -c "
+                      ip route del default  &&
+
+                      ip route add default via 10.9.0.1 &&
+
+                      tail -f /dev/null"
+networks:
+    net-192.168.60.0:
+        name: net-192.168.60.0
+        ipam:
+            config:
+                - subnet: 192.168.60.0/24
+    net-10.9.0.0:
+        name: net-10.9.0.0
+        ipam:
+            config:
+                - subnet: 10.9.0.0/24

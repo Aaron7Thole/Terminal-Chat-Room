@@ -1,0 +1,16 @@
+# Dockerfile.
+# FROM ubuntu:20.04 server # python:latest   #FROM ubuntu:latest   ?
+# step1/3 image --> f48ea80eae5a   ... Successfully built 700c22b0d9d6
+# image needed for 2nd arg
+
+# after running command: docker build -f DockerClient.yml
+# ... it output this upon completion ...
+# Removing intermediate container 29037f3d23fb ---> 700c22b0d9d6 Successfully built 700c22b0d9d6
+
+# FROM requires this syntax:
+# FROM [--platform=<platorm>] <image> [AS <name>]
+FROM python3:latest
+
+ADD Client.py /client/
+
+WORKDIR /client/
